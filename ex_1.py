@@ -23,7 +23,7 @@ class Centroid:
 
     def update_location(self):
         new_location = [0, 0]
-        size = self._assigned_points.__len__()
+        size = len(self._assigned_points)
         # Update centroid to be the average of the points in its cluster
         for point in self._assigned_points:
             new_location[0] = new_location[0] + point[0]
@@ -36,12 +36,12 @@ class Centroid:
         new_location[0] = round(new_location[0])
         new_location[1] = round(new_location[1])
 
-
         if (self._location[0] != new_location[0] or self._location[1] != new_location[1]):
             # update the centroid location
             self._location = new_location
             return False
         return True
+
 
 
 def distance(x1, x2):
@@ -54,16 +54,11 @@ def main():
     x = np.array(y.copy())  # data
     initial_centroids = np.loadtxt(centroids)  # centroids
 
-    # the K value is the num of points in the centroid file
-    k = len(initial_centroids)
-
-    # Create for each centroid his own list of points and put all the centroids in a list
-
     centroids = []
     for cent in initial_centroids:
         centroids.append(Centroid(cent))
 
-    f = open("output.txt", "a")
+    f = open("output.txt", "w")
 
     is_convergence = False
     i = 0
@@ -87,18 +82,20 @@ def main():
             if (changed == False):
                 is_convergence = False
 
-        # Print the centroids in each iteration
-        arr = np.array(cent.get_location())
-        print(f"[iter {i}]:{','.join([str(arr) for cent in centroids])}")
-        f.write(f"[iter {i}]:{','.join([str(arr) for cent in centroids])}")
+        # print centroids location
+        locations = []
+        for cent in centroids:
+            temp = np.array(cent.get_location())
+            locations.append(temp)
+
+        print(f"[iter {i}]:{','.join([str(location) for location in locations])}")
+        f.write(f"[iter {i}]:{','.join([str(location) for location in locations])}")
         f.write("\n")
-        i += 1
 
         # clear all the assigned points
         for cent in centroids:
             cent.clear_points()
-
-    f.close()
+        i += 1
 
 
 main()
